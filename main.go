@@ -1,6 +1,7 @@
 package main
 import (
 	"github.com/dengskoloper/downey/cdm"
+	"github.com/dengskoloper/downey/util"
 	"net/http"
 	"bytes"
 	"encoding/hex"
@@ -13,7 +14,7 @@ import (
 
 var opts struct {
 	LicenseServerURL string `long:"lic-server" description:"License Server URL"`
-	InitPSSH string `long:"pssh-data" description:"Override PSSH Init data from MPD"`
+	AddHeaders bool `long:"add-headers" description:"Read HTTP headers from headers.json"`
 }
 
 func init() {
@@ -52,6 +53,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	if opts.AddHeaders {
+		util.ReadHeadersFromJSON(&request.Header) 
+	}
+
 	request.Close = true
 	response, err := client.Do(request)
 	if err != nil {
@@ -74,5 +80,5 @@ func main() {
 			command += "\n" + hex.EncodeToString(key.ID) + ":" + hex.EncodeToString(key.Value)
 		}
 	}
-	fmt.Println("Decryption keys: ", command)
+	fmt.Println("\nDecryption keys: ", command)
 }
