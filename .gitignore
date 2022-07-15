@@ -2,5 +2,7 @@ device_client_id_blob*
 device_private_key*
 manifest.mpd*
 *.exe
-*.zip
 headers.json*
+test.go
+*.txt
+downey*

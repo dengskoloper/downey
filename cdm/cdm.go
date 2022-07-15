@@ -95,6 +95,11 @@ func (c *CDM) SetServiceCertificate(certData []byte) error {
 	return nil
 }
 
+func (c *CDM) GetServiceCertificate() *SignedDeviceCertificate {
+	
+	return &c.signedDeviceCertificate
+}
+
 // Generates the license request data.  This is sent to the license server via
 // HTTP POST and the server in turn returns the license response.
 func (c *CDM) GetLicenseRequest() ([]byte, error) {

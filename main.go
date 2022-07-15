@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"bytes"
 	"encoding/hex"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"time"
@@ -15,6 +16,7 @@ import (
 var opts struct {
 	LicenseServerURL string `long:"lic-server" description:"License Server URL"`
 	AddHeaders bool `long:"add-headers" description:"Read HTTP headers from headers.json"`
+	InitPSSH string `long:"pssh" description:"Override PSSH data"`
 }
 
 func init() {
@@ -26,17 +28,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	var initData []byte
+	if len(opts.InitPSSH) > 0 {
+		initData, err = base64.StdEncoding.DecodeString(opts.InitPSSH)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		file, err := os.Open("manifest.mpd")
+		if err != nil {
+			panic(err)
+		}
 
-	file, err := os.Open("manifest.mpd")
-	if err != nil {
-		panic(err)
+		initData, err = widevine.InitDataFromMPD(file)
+		if err != nil {
+			panic(err)
+		}
 	}
-
-	initData, err := widevine.InitDataFromMPD(file)
-	if err != nil {
-		panic(err)
-	}
-
 	cdm, err := widevine.NewDefaultCDM(initData)
 	if err != nil {
 		panic(err)
